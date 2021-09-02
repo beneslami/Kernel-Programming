@@ -100,3 +100,13 @@ Besides above, User can define his own message types which should be greater tha
 * The third item is **nlmsg_flags**. These flags are set in Netlink message to convey additional information to the recipient.
 It is worth mentioning that multiple flags could be set using bitwise ADN/OR operators. These flags also cen be found in the same
   header as before.
+  
+* The third argument is **nlmsg_seq**. When the userspace application sends a Netlink request to kernel space, it must set
+a unique number to this request if the user space application sets NLM_F_ACC flag. When the kernel space replies back with
+  confirmation message to user space application, it sets the same sequence number which was specified in the request message
+  sent from the application. This helps the user space application to correlate which Netlink reply is for which netlink request
+  in case the application has issued multiple netlink requests to the kernel and awaiting reply.
+  
+* PID or Port ID. It is set by the Userspace application while sending netlink message to the kernel space. Since it should 
+be unique to the application, therefore it's good to assign process id to that. Note that, this value is set to zero for Netlink
+  messages originating from kernel space to userspace. 
