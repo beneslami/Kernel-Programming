@@ -110,3 +110,18 @@ a unique number to this request if the user space application sets NLM_F_ACC fla
 * PID or Port ID. It is set by the Userspace application while sending netlink message to the kernel space. Since it should 
 be unique to the application, therefore it's good to assign process id to that. Note that, this value is set to zero for Netlink
   messages originating from kernel space to userspace. 
+
+User space program can decide to communicate with any kernel module sub-systems running in the linux kernel. 
+So the question is that how the userspace program can identify that with which linux kernel sub-systems they want
+to communicate ? The simple answer is that every linux kernel sub-system is assigned a unique ID. This ID is called
+Netlink Protocol Number which is assigned to each Netlink capable kernel sub-system. There are reserved ID numbers for 
+important kernel sub-system modules such as TCP/IP stack etc. which can be found in the file linux/netlink.h
+![diagram](netlink.png)
+
+When the kernel space receives data from User space application via Netlink, data is received in a data structure called 
+**socket Buffer**, which is defined in include/linux/skbuff.h
+
+Kernel uses this data structure extensively for multiple purposes:
+1. For transferring messages from one kernel subsystem to another
+2. for receiving Network packet
+3. packet movement upwards and downwards in the layers of TCP/IP stack 
