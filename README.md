@@ -116,7 +116,6 @@ So the question is that how the userspace program can identify that with which l
 to communicate ? The simple answer is that every linux kernel sub-system is assigned a unique ID. This ID is called
 Netlink Protocol Number which is assigned to each Netlink capable kernel sub-system. There are reserved ID numbers for 
 important kernel sub-system modules such as TCP/IP stack etc. which can be found in the file linux/netlink.h
-![diagram](netlink.png)
 
 When the kernel space receives data from User space application via Netlink, data is received in a data structure called 
 **socket Buffer**, which is defined in include/linux/skbuff.h
@@ -124,4 +123,9 @@ When the kernel space receives data from User space application via Netlink, dat
 Kernel uses this data structure extensively for multiple purposes:
 1. For transferring messages from one kernel subsystem to another
 2. for receiving Network packet
-3. packet movement upwards and downwards in the layers of TCP/IP stack 
+3. packet movement upwards and downwards in the layers of TCP/IP stack
+
+
+Note that in the userspace application, there are two threads operating in parallel:
+1. main thread which independently sends data to the linux kernel module
+2. child thread which independently receives data from the linux kernel module
