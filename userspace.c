@@ -42,3 +42,52 @@ int send_netlink_msg_to_kernel(int sock_fd, char *msg, uint32_t msg_size, int nl
     }
     return rc;
 }
+
+static void greet_kernel(int sock_fd, char* msg; uint32_t msg_len){
+    send_netlink_msg_to_kernel(sock_fd, msg, msg_len, NLMSG_GREET, NLM_F_ACK);
+}
+int main(int argc, char **argv){
+    int choice;
+    int sock_fd;
+
+    sock_fd = create_netlink_socket(NETLINK_TEST_PROTOCOL);
+    if(sock_fd == -1){
+        printf("netlink socket creation failed, error = %d\n", errno);
+        exit(EXIT_FAILURE);
+    }
+
+    struct sockaddr_nl src_addr;
+    struct nlmsghdr *nlh = NULL;
+    memset(&src_addr, 0, sizeof(src_addr));
+    src_addr.nl_family = AF_NETLINK;
+    src_addr.nl_pid = getpid();
+
+    if(bind(sock_fd, (struct sockaddr*)&src_addr, sizeof(src_addr)) == -1){
+        printf("Error: bind failed\n");
+        exit(1);
+    }
+    while(1){
+        printf("Main Menu\n");
+        printf("1. message to the kernel\n");
+        printf("2. exit\n");
+        printf("choice:\n");
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                char user_msg[MAX_PAYLOAD];
+                memset(user_msg, 0, MAX_PAYLOAD);
+                if((fgets(user_msg, MAX_PAYLOAD, stdin) == NULL)){
+                    printf("error reading from input\n");
+                    exit(EXIT_FAILURE);
+                }
+                greet_kernel(sock_fd, user_msg, strlen(user_msg));
+                break;
+            case 2:
+                exit_userspace(sock_fd);
+                break;
+            default:
+
+        }
+    }
+    return 0;
+}
